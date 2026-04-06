@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const { message } = await req.json();
 
     const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       messages: [
         {
           role: "system",
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     console.error("Mentor API Error:", error);
     return NextResponse.json({
-      reply: "AI mentor temporarily unavailable",
-    });
+    reply: `Error: ${String(error)}`,
+  });
   }
 }
