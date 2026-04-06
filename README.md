@@ -1,2 +1,1 @@
-# SkillBridge-AI
-AI-powered student collaboration platform for hackathon team matching, project ideation, workspace management, resume generation, and mentor feedback.
+SkillBridge AI is a student collaboration platform that helps users find teammates, generate project ideas, manage tasks, and convert project work into resume-ready achievements.
