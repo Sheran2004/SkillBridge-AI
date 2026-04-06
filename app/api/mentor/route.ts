@@ -1,38 +1,30 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: Request) {
   try {
     const { message } = await req.json();
 
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an AI hackathon mentor helping students with PPT, startup, coding, deployment, and team building.",
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
 
-    const reply =
-      completion.choices?.[0]?.message?.content ||
-      "Try asking in a more detailed way.";
+    const result = await model.generateContent(
+      `You are an AI hackathon mentor helping students with PPT, startup, coding, deployment, and team building.
+      
+User question: ${message}`
+    );
+
+    const reply = result.response.text();
 
     return NextResponse.json({ reply });
   } catch (error: unknown) {
-    console.error("Mentor API Error:", error);
+    console.error("Gemini Mentor Error:", error);
+
     return NextResponse.json({
-    reply: `Error: ${String(error)}`,
-  });
+      reply: "Gemini AI mentor temporarily unavailable",
+    });
   }
 }
