@@ -8,23 +8,23 @@ export async function POST(req: Request) {
     const { message } = await req.json();
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro-latest",
+      model: "gemini-1.5-flash-latest",
     });
 
-    const result = await model.generateContent(
-      `You are an AI hackathon mentor helping students with PPT, startup, coding, deployment, and team building.
-      
-User question: ${message}`
-    );
+    const prompt = `
+You are an AI hackathon mentor helping students with PPT, startup, coding, deployment, and team building.
 
+User question: ${message}
+`;
+
+    const result = await model.generateContent(prompt);
     const reply = result.response.text();
 
     return NextResponse.json({ reply });
   } catch (error: unknown) {
-    console.error("Gemini Mentor Error:", error);
-
+    console.error("Gemini Error:", error);
     return NextResponse.json({
-    reply: `Gemini Error: ${String(error)}`,
-  });
+      reply: `Gemini Error: ${error}`,
+    });
   }
 }
