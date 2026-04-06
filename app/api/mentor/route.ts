@@ -24,7 +24,7 @@ User question: ${message}`
     console.error("Gemini Mentor Error:", error);
 
     return NextResponse.json({
-      reply: "Gemini AI mentor temporarily unavailable",
-    });
+    reply: `Gemini Error: ${String(error)}`,
+  });
   }
 }
