@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { message } = await req.json();
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-pro",
+      model: "gemini-2.0-flash",
     });
 
     const prompt = `
@@ -22,10 +22,11 @@ User question: ${message}
 
     return NextResponse.json({ reply });
   } catch (error: unknown) {
-  console.error("Gemini Error:", error);
+    console.error("Gemini Error:", error);
 
-  const message =
-    error instanceof Error ? error.message : "Something went wrong";
+    const message =
+      error instanceof Error ? error.message : "Something went wrong";
+
     return NextResponse.json({
       reply: `Gemini Error: ${message}`,
     });
