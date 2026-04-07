@@ -3,51 +3,42 @@ import PptxGenJS from "pptxgenjs";
 
 export async function POST(req: Request) {
   try {
-    const { topic = "SkillBridge AI" } = await req.json();
+    const { topic = "SkillBridge AI", content = "" } =
+      await req.json();
 
     const pptx = new PptxGenJS();
     pptx.layout = "LAYOUT_WIDE";
-    pptx.author = "SkillBridge AI";
-    pptx.subject = topic;
-    pptx.title = `${topic} Hackathon Pitch`;
 
-    const slides = [
-      {
-        title: "Problem Statement",
-        body: "Students struggle to find teammates, mentors, and strong hackathon ideas quickly.",
-      },
-      {
-        title: "Solution",
-        body: "SkillBridge AI helps students discover teammates, AI mentors, and project ideas.",
-      },
-      {
-        title: "Key Features",
-        body: "AI Mentor, Team Finder, Resume Builder, PPT Generator, GitHub Sync",
-      },
-      {
-        title: "Tech Stack",
-        body: "Next.js, Firebase, Vercel, OpenRouter, Tailwind CSS",
-      },
-      {
-        title: "Future Scope",
-        body: "APK app, real-time team chat, analytics, recruiter dashboard",
-      },
-    ];
+    const slideTexts =
+      content.split("\n").filter((line: string) => line.trim()) ||
+      [];
 
-    slides.forEach((s) => {
+    if (slideTexts.length === 0) {
+      slideTexts.push(
+        "Problem",
+        "Solution",
+        "Features",
+        "Tech Stack",
+        "Future Scope"
+      );
+    }
+
+    slideTexts.slice(0, 5).forEach((text: string, index: number) => {
       const slide = pptx.addSlide();
-      slide.addText(s.title, {
+
+      slide.addText(`${topic} - Slide ${index + 1}`, {
         x: 0.5,
         y: 0.5,
         w: 12,
-        h: 0.8,
+        h: 0.6,
         fontSize: 28,
         bold: true,
       });
-      slide.addText(s.body, {
+
+      slide.addText(text, {
         x: 0.8,
         y: 1.8,
-        w: 11.5,
+        w: 11,
         h: 4,
         fontSize: 20,
         breakLine: true,
@@ -55,16 +46,21 @@ export async function POST(req: Request) {
     });
 
     const buffer = await pptx.write({
-        outputType: "nodebuffer",
-        });
+      outputType: "nodebuffer",
+    });
 
     return new NextResponse(buffer as BodyInit, {
       headers: {
-        "Content-Type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "Content-Disposition": `attachment; filename="${topic.replace(/\s+/g, "-")}.pptx"`,
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "Content-Disposition":
+          'attachment; filename="AI-Mentor-Presentation.pptx"',
       },
     });
   } catch {
-    return NextResponse.json({ error: "PPT generation failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "PPT generation failed" },
+      { status: 500 }
+    );
   }
 }
