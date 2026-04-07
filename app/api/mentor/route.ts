@@ -10,47 +10,123 @@ function fallbackReply(
   message: string,
   history: HistoryMessage[] = []
 ): string {
-  const text = message.toLowerCase();
+  const text = message.toLowerCase().trim();
 
-  const previousContext = history
-    .map((m) => m.content.toLowerCase())
-    .join(" ");
+  const lastAssistant = [...history]
+    .reverse()
+    .find((m) => m.role === "assistant")?.content;
 
-  // PPT flow
-  if (previousContext.includes("ppt") || text.includes("ppt")) {
-    if (text.includes("slide 1")) {
+  // PPT / presentation
+  if (
+    text.includes("ppt") ||
+    text.includes("slide") ||
+    text.includes("presentation")
+  ) {
+    if (text.includes("1")) {
       return "Slide 1: Problem Statement — Students struggle to find teammates, mentors, and strong hackathon ideas quickly.";
     }
-
-    if (text.includes("slide 2")) {
-      return "Slide 2: Solution — SkillBridge AI helps students discover teammates, generate AI project ideas, and get mentorship support.";
+    if (text.includes("2")) {
+      return "Slide 2: Solution — SkillBridge AI connects students with teammates, AI mentors, and project ideas.";
+    }
+    if (text.includes("3")) {
+      return "Slide 3: Features — AI Mentor, Team Finder, Resume Builder, GitHub Sync, PPT Generator.";
+    }
+    if (text.includes("4")) {
+      return "Slide 4: Tech Stack — Next.js, Firebase, OpenRouter, Vercel, Tailwind.";
+    }
+    if (text.includes("5")) {
+      return "Slide 5: Future Scope — APK app, live chat, recruiter mode, analytics dashboard.";
     }
 
-    if (text.includes("slide 3")) {
-      return "Slide 3: Features — AI Mentor, Team Finder, Resume Builder, Project Ideas, GitHub Sync.";
-    }
-
-    if (text.includes("slide 4")) {
-      return "Slide 4: Tech Stack — Next.js, Firebase, OpenRouter API, Vercel, Tailwind CSS.";
-    }
-
-    if (text.includes("slide 5")) {
-      return "Slide 5: Future Scope — APK app, live teammate chat, analytics dashboard, recruiter access.";
-    }
-
-    return "Use 5 slides: Problem, Solution, Features, Tech Stack, Future Scope.";
+    return `For "${message}", create 5 slides:
+1. Problem
+2. Solution
+3. Features
+4. Tech Stack
+5. Future Scope`;
   }
 
-  // Startup flow
-  if (previousContext.includes("startup") || text.includes("startup")) {
-    if (text.includes("revenue")) {
-      return "Revenue model: premium AI mentor, recruiter dashboard, college subscriptions.";
-    }
-
-    return "Startup pitch: SkillBridge AI solves student collaboration and hackathon preparation.";
+  // Deployment
+  if (
+    text.includes("deploy") ||
+    text.includes("vercel") ||
+    text.includes("production") ||
+    text.includes("hosting")
+  ) {
+    return `Deployment steps for "${message}":
+1. Push code to GitHub
+2. Import repo into Vercel
+3. Add environment variables
+4. Deploy production build
+5. Test live domain`;
   }
 
-  return "I can help with PPTs, coding, deployment, startup, and hackathon strategy.";
+  // Bug fixing
+  if (
+    text.includes("bug") ||
+    text.includes("error") ||
+    text.includes("issue") ||
+    text.includes("fix")
+  ) {
+    return `To solve "${message}", check:
+• console logs
+• API route
+• environment variables
+• Firebase config
+• Vercel logs
+• package dependencies`;
+  }
+
+  // Startup / business
+  if (
+    text.includes("startup") ||
+    text.includes("pitch") ||
+    text.includes("investor") ||
+    text.includes("business")
+  ) {
+    return `Startup guidance for "${message}":
+• define problem
+• explain solution
+• target users
+• revenue model
+• growth strategy
+• future expansion`;
+  }
+
+  // Coding / project
+  if (
+    text.includes("code") ||
+    text.includes("project") ||
+    text.includes("feature") ||
+    text.includes("api")
+  ) {
+    return `For "${message}", break it into:
+• frontend UI
+• backend API
+• database
+• auth
+• deployment
+• testing`;
+  }
+
+  // Team / hackathon
+  if (
+    text.includes("team") ||
+    text.includes("hackathon") ||
+    text.includes("mentor")
+  ) {
+    return `Best strategy for "${message}":
+• choose strong teammates
+• divide frontend/backend/AI roles
+• build MVP first
+• prepare PPT
+• demo clean workflow`;
+  }
+
+  // Smart generic no-repeat fallback
+  return lastAssistant
+    ? `Based on your latest question "${message}", continue from previous context and expand the next practical step.`
+    : `For "${message}", first define the goal, then break it into implementation steps, tools needed, and deployment strategy.`;
 }
 
 async function askOpenRouter(
