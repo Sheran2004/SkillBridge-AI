@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
+import { rtdb } from "@/lib/firebase";
 import { push, ref, onValue } from "firebase/database";
 
 type ChatMessage = {
@@ -14,10 +14,11 @@ export default function TeamChatPage() {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    const chatRef = ref(db, "team-chat");
+    const chatRef = ref(rtdb, "team-chat");
 
     const unsubscribe = onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
+
       if (!data) {
         setMessages([]);
         return;
@@ -33,7 +34,7 @@ export default function TeamChatPage() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const chatRef = ref(db, "team-chat");
+    const chatRef = ref(rtdb, "team-chat");
 
     await push(chatRef, {
       text: input,
