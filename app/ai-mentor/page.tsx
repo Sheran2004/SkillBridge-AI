@@ -17,6 +17,21 @@ export default function AIMentorPage() {
     },
   ]);
 
+  const downloadPPT = async () => {
+  const res = await fetch("/api/generate-ppt", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic: "SkillBridge AI" }),
+  });
+
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "SkillBridge-AI.pptx";
+  a.click();
+};
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -95,6 +110,12 @@ export default function AIMentorPage() {
           className="bg-black text-white px-6 rounded-2xl"
         >
           Send
+        </button>
+        <button
+          onClick={downloadPPT}
+          className="bg-gray-200 px-6 rounded-2xl"
+        >
+          Download PPT
         </button>
       </div>
     </div>
