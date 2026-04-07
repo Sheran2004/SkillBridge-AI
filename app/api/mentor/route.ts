@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import axios from "axios";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -7,71 +8,64 @@ function fallbackReply(message: string) {
   const text = message.toLowerCase();
 
   if (text.includes("ppt")) {
-    return `Here’s a 5-slide PPT structure for SkillBridge AI:
-
-1. Problem Statement
-- Students struggle to find teammates, mentors, and project ideas
-
-2. Our Solution
-- SkillBridge AI connects teammates, AI mentor, PPT builder
-
-3. Key Features
-- AI mentor
-- Team matching
-- Resume builder
-- Hackathon PPT generator
-
-4. Tech Stack
-- Next.js
-- Firebase
-- Gemini API
-- Vercel
-
-5. Future Scope
-- Live chat
-- GitHub sync
-- APK app
-- Analytics dashboard`;
+    return "Use 5 slides: Problem, Solution, Features, Tech Stack, Future Scope.";
   }
 
-  if (text.includes("startup")) {
-    return "For startup mode: focus on problem, market, MVP, revenue model, and GTM strategy.";
-  }
+  return "I can help with PPTs, coding, deployment, startup, and hackathon strategy.";
+}
 
-  if (text.includes("deploy")) {
-    return "For deployment: use Vercel + Firebase env variables + production domain auth setup.";
-  }
+async function askOpenRouter(message: string) {
+  const response = await axios.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      model: "deepseek/deepseek-chat-v3-0324:free",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert AI hackathon mentor for students and startups.",
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-  return "I can help with PPTs, startup ideas, deployment, coding, and hackathon strategies.";
+  return response.data.choices[0].message.content;
 }
 
 export async function POST(req: Request) {
-  try {
-    const { message } = await req.json();
+  const { message } = await req.json();
 
+  try {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
     });
 
-    const prompt = `
-You are an AI hackathon mentor helping students with PPT, startup, coding, deployment, and team building.
-
-User question: ${message}
-`;
-
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent(message);
     const reply = result.response.text();
 
     return NextResponse.json({ reply });
-  } catch (error) {
-    console.error("Gemini Error:", error);
+  } catch (geminiError) {
+    console.log("Gemini failed, switching to OpenRouter");
 
-    const { message } = await req.json().catch(() => ({
-      message: "",
-    }));
+    try {
+      const reply = await askOpenRouter(message);
+      return NextResponse.json({ reply });
+    } catch (routerError) {
+      console.log("OpenRouter failed, switching to fallback");
 
-    return NextResponse.json({
-      reply: fallbackReply(message),
-    });
+      return NextResponse.json({
+        reply: fallbackReply(message),
+      });
+    }
   }
 }
