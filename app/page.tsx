@@ -12,17 +12,35 @@ export default function Home() {
         and manage project tasks in one place.
       </p>
 
-      <div className="mt-8 flex gap-4">
-        <Link href="/login">
-          <button className="px-6 py-3 rounded-2xl bg-black text-white">
-            Get Started
-          </button>
-        </Link>
+      <div className="flex flex-wrap justify-center gap-4 mt-8">
+  <a
+    href="/ai-mentor"
+    className="bg-black text-white px-6 py-3 rounded-2xl"
+  >
+    AI Mentor
+  </a>
 
-        <button className="px-6 py-3 rounded-2xl border">
-          Explore
-        </button>
-      </div>
+  <a
+    href="/team-chat"
+    className="border px-6 py-3 rounded-2xl"
+  >
+    Team Chat
+  </a>
+
+  <a
+    href="/tasks"
+    className="border px-6 py-3 rounded-2xl"
+  >
+    Tasks
+  </a>
+
+  <a
+    href="/analytics"
+    className="border px-6 py-3 rounded-2xl"
+  >
+    Analytics
+  </a>
+</div>
     </main>
   );
 }
