@@ -19,10 +19,11 @@ export default function TasksPage() {
 
     return onValue(tasksRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const list = Object.entries(data).map(([id, value]: any) => ({
-        id,
-        ...(value as object),
-      })) as Task[];
+      const list: Task[] = Object.keys(data).map((id) => ({
+  id,
+  text: data[id].text,
+  done: data[id].done,
+}));
 
       setTasks(list);
     });
