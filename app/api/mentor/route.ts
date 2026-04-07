@@ -6,15 +6,48 @@ type HistoryMessage = {
   content: string;
 };
 
-function fallbackReply(message: string): string {
+function fallbackReply(
+  message: string,
+  history: HistoryMessage[] = []
+): string {
   const text = message.toLowerCase();
 
-  if (text.includes("ppt") || text.includes("slide")) {
+  const previousContext = history
+    .map((m) => m.content.toLowerCase())
+    .join(" ");
+
+  // PPT flow
+  if (previousContext.includes("ppt") || text.includes("ppt")) {
+    if (text.includes("slide 1")) {
+      return "Slide 1: Problem Statement — Students struggle to find teammates, mentors, and strong hackathon ideas quickly.";
+    }
+
+    if (text.includes("slide 2")) {
+      return "Slide 2: Solution — SkillBridge AI helps students discover teammates, generate AI project ideas, and get mentorship support.";
+    }
+
+    if (text.includes("slide 3")) {
+      return "Slide 3: Features — AI Mentor, Team Finder, Resume Builder, Project Ideas, GitHub Sync.";
+    }
+
+    if (text.includes("slide 4")) {
+      return "Slide 4: Tech Stack — Next.js, Firebase, OpenRouter API, Vercel, Tailwind CSS.";
+    }
+
+    if (text.includes("slide 5")) {
+      return "Slide 5: Future Scope — APK app, live teammate chat, analytics dashboard, recruiter access.";
+    }
+
     return "Use 5 slides: Problem, Solution, Features, Tech Stack, Future Scope.";
   }
 
-  if (text.includes("bug") || text.includes("error")) {
-    return "Check logs, environment variables, route path, Firebase config, and deployment logs.";
+  // Startup flow
+  if (previousContext.includes("startup") || text.includes("startup")) {
+    if (text.includes("revenue")) {
+      return "Revenue model: premium AI mentor, recruiter dashboard, college subscriptions.";
+    }
+
+    return "Startup pitch: SkillBridge AI solves student collaboration and hackathon preparation.";
   }
 
   return "I can help with PPTs, coding, deployment, startup, and hackathon strategy.";
@@ -64,7 +97,7 @@ async function askOpenRouter(
       fallbackReply(message)
     );
   } catch {
-    return fallbackReply(message);
+    return fallbackReply(message,history);
   }
 }
 
