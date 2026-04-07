@@ -1,17 +1,21 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD43SV67K0L06PIXQ_Lc7xC2tmbCNTkr74",
-  authDomain: "skillbridge-ai-57bdd.firebaseapp.com",
-  projectId: "skillbridge-ai-57bdd",
-  storageBucket: "skillbridge-ai-57bdd.firebasestorage.app",
-  messagingSenderId: "894812779038",
-  appId: "1:894812779038:web:b23e2556ec4756e94df40f",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId:
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = getDatabase(app);
