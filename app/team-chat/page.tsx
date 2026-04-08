@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { rtdb } from "@/lib/firebase";
-import { push, ref, onValue } from "firebase/database";
+import { push, ref, onValue, remove } from "firebase/database";
 
 type ChatMessage = {
   text: string;
@@ -34,9 +34,7 @@ export default function TeamChatPage() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const chatRef = ref(rtdb, "team-chat");
-
-    await push(chatRef, {
+    await push(ref(rtdb, "team-chat"), {
       text: input,
       sender: "Sheran",
     });
@@ -44,24 +42,39 @@ export default function TeamChatPage() {
     setInput("");
   };
 
+  const clearChat = async () => {
+    await remove(ref(rtdb, "team-chat"));
+    setMessages([]);
+  };
+
   return (
     <div className="min-h-screen bg-white p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl font-bold mb-2">Team Live Chat</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-5xl font-bold">Team Live Chat</h1>
+          <button
+            onClick={clearChat}
+            className="bg-red-600 text-white px-5 py-2 rounded-2xl"
+          >
+            Clear Chat
+          </button>
+        </div>
+
         <p className="text-gray-500 mb-6">
           Realtime collaboration for teammates
         </p>
 
         <div className="border rounded-3xl h-[500px] p-4 overflow-y-auto">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className="mb-4 bg-gray-100 rounded-2xl p-4"
-            >
-              <p className="font-semibold">{msg.sender}</p>
-              <p>{msg.text}</p>
-            </div>
-          ))}
+          {messages.length === 0 ? (
+            <p className="text-gray-400">No messages yet</p>
+          ) : (
+            messages.map((msg, i) => (
+              <div key={i} className="mb-4 bg-gray-100 rounded-2xl p-4">
+                <p className="font-semibold">{msg.sender}</p>
+                <p>{msg.text}</p>
+              </div>
+            ))
+          )}
         </div>
 
         <div className="flex gap-3 mt-4">
