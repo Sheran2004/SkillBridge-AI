@@ -9,12 +9,14 @@ type ChatMessage = {
   sender: string;
 };
 
+const teamId = "team-alpha"; // later dynamic from invite/team join
+
 export default function TeamChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    const chatRef = ref(rtdb, "team-chat");
+    const chatRef = ref(rtdb, `teams/${teamId}/chat`);
 
     const unsubscribe = onValue(chatRef, (snapshot) => {
       const data = snapshot.val();
@@ -34,7 +36,7 @@ export default function TeamChatPage() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    await push(ref(rtdb, "team-chat"), {
+    await push(ref(rtdb, `teams/${teamId}/chat`), {
       text: input,
       sender: "Sheran",
     });
@@ -43,7 +45,7 @@ export default function TeamChatPage() {
   };
 
   const clearChat = async () => {
-    await remove(ref(rtdb, "team-chat"));
+    await remove(ref(rtdb, `teams/${teamId}/chat`));
     setMessages([]);
   };
 
@@ -51,7 +53,9 @@ export default function TeamChatPage() {
     <div className="min-h-screen bg-white p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-5xl font-bold">Team Live Chat</h1>
+          <h1 className="text-5xl font-bold">
+            Team Room: {teamId}
+          </h1>
           <button
             onClick={clearChat}
             className="bg-red-600 text-white px-5 py-2 rounded-2xl"
@@ -61,7 +65,7 @@ export default function TeamChatPage() {
         </div>
 
         <p className="text-gray-500 mb-6">
-          Realtime collaboration for teammates
+          Private realtime chat room for your team
         </p>
 
         <div className="border rounded-3xl h-[500px] p-4 overflow-y-auto">
@@ -69,7 +73,10 @@ export default function TeamChatPage() {
             <p className="text-gray-400">No messages yet</p>
           ) : (
             messages.map((msg, i) => (
-              <div key={i} className="mb-4 bg-gray-100 rounded-2xl p-4">
+              <div
+                key={i}
+                className="mb-4 bg-gray-100 rounded-2xl p-4"
+              >
                 <p className="font-semibold">{msg.sender}</p>
                 <p>{msg.text}</p>
               </div>
@@ -81,7 +88,7 @@ export default function TeamChatPage() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Send message to team..."
+            placeholder="Send message to your team..."
             className="flex-1 border rounded-2xl px-4 py-3"
           />
 
