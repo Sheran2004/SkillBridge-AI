@@ -20,7 +20,16 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+    <main className="min-h-screen flex items-center justify-center bg-gray-50 relative">
+      {user && (
+        <button
+          onClick={handleLogout}
+          className="absolute top-6 right-6 border border-red-500 text-red-500 px-5 py-2 rounded-2xl"
+        >
+          Logout
+        </button>
+      )}
+
       <div className="text-center">
         <h1 className="text-7xl font-bold">SkillBridge AI</h1>
 
@@ -74,13 +83,6 @@ export default function Home() {
             >
               Analytics
             </Link>
-
-            <button
-              onClick={handleLogout}
-              className="border border-red-500 text-red-500 px-6 py-3 rounded-2xl"
-            >
-              Logout
-            </button>
           </div>
         )}
       </div>
