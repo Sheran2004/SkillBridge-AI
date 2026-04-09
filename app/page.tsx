@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -13,6 +13,11 @@ export default function Home() {
       setUser(currentUser);
     });
   }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    window.location.reload();
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -69,6 +74,13 @@ export default function Home() {
             >
               Analytics
             </Link>
+
+            <button
+              onClick={handleLogout}
+              className="border border-red-500 text-red-500 px-6 py-3 rounded-2xl"
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>
